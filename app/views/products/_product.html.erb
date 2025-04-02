@@ -4,6 +4,11 @@
       <h5 class="card-title">
         <%= link_to product.name, product_path(product), class: "text-decoration-none" %>
       </h5>
+      <% if product.image.attached? %>
+        <%= image_tag product.image.variant(resize_to_limit: [300, 300]) %>
+      <% else %>
+        <p>No image available</p>
+      <% end %>
       <p class="card-text">
         <strong>Description:</strong>
         <% if action_name == 'show' %>
