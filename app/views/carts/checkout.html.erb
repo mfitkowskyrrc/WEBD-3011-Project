@@ -15,18 +15,22 @@
       <% @cart.cart_items.each do |cart_item| %>
         <tr>
           <td><%= cart_item.product.name %></td>
-          <td>$<%= number_to_currency(cart_item.product.price) %></td>
+          <td><%= number_to_currency(cart_item.product.price) %></td>
           <td><%= cart_item.quantity %></td>
-          <td>$<%= number_to_currency(cart_item.product.price * cart_item.quantity) %></td>
+          <td><%= number_to_currency(cart_item.product.price * cart_item.quantity) %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 
-  <h3>Total: $<%= number_to_currency(@cart.cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
+  <h3>Total: <%= number_to_currency(@cart.cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
+
+  <%= form_with url: complete_purchase_cart_path, method: :post, class: 'd-inline' do %>
+    <%= submit_tag 'Complete Purchase', class: 'btn btn-success' %>
+  <% end %>
+
 <% else %>
   <p>Your cart is empty. Please add items to your cart before proceeding to checkout.</p>
 <% end %>
 
-<%= link_to 'Complete Purchase', '#', class: 'btn btn-success' %>
 <%= link_to 'Back to Cart', cart_path, class: 'btn btn-secondary' %>

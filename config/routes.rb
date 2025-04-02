@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     post 'add_product/:product_id', to: 'carts#add_product', as: 'add_product'
     post 'remove_product/:product_id', to: 'carts#remove_product', as: 'remove_product'
     get 'checkout', to: 'carts#checkout', as: 'checkout'
+    post 'complete_purchase', to: 'carts#complete_purchase', as: 'complete_purchase'
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
