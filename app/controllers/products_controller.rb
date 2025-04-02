@@ -3,7 +3,12 @@ class ProductsController < ApplicationController
 
   # GET /products or /products.json
   def index
-    @products = Product.all
+    @categories = Category.all # Load all categories for the select input
+    if params[:category].present?
+      @products = Product.where(category_id: params[:category]) # Filter products by selected category
+    else
+      @products = Product.all # Show all products if no filter is applied
+    end
   end
 
   # GET /products/1 or /products/1.json
