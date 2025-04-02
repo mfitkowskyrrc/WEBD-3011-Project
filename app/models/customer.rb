@@ -9,6 +9,10 @@ class Customer < ApplicationRecord
 
   after_create :create_cart
 
+  def admin?
+    admin
+  end
+
   def self.ransackable_associations(auth_object = nil)
     ["orders"]
   end

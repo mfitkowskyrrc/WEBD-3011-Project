@@ -11,9 +11,9 @@ Cart.destroy_all
 Customer.destroy_all
 
 customers = [
-  { name: "Ash", email: "ash@example.com", address: "Pallet Town", password: "password" },
-  { name: "Misty", email: "misty@example.com", address: "Cerulean City", password: "password" },
-  { name: "Brock", email: "brock@example.com", address: "Pewter City", password: "password" }
+  { name: "Ash", email: "ash@example.com", address: "Pallet Town", password: "password", admin: true },
+  { name: "Misty", email: "misty@example.com", address: "Cerulean City", password: "password", admin: false },
+  { name: "Brock", email: "brock@example.com", address: "Pewter City", password: "password", admin: false }
 ]
 
 customers.each do |customer_data|
@@ -21,7 +21,9 @@ customers.each do |customer_data|
     customer.name = customer_data[:name]
     customer.address = customer_data[:address]
     customer.password = customer_data[:password]
+    customer.admin = customer_data[:admin]
   end
+  puts customer_data
 end
 
 

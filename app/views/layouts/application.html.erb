@@ -15,6 +15,7 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </head>
@@ -33,22 +34,27 @@
         <li class="nav-item">
           <a class="nav-link" href="<%= products_path %>">Products</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="<%= admin_root_path %>">Admin Dashboard</a>
-        </li>
+
+        <% if current_customer&.admin? %>
+          <li class="nav-item">
+            <a class="nav-link" href="<%= admin_root_path %>">Admin Dashboard</a>
+          </li>
+        <% end %>
+
         <li class="nav-item">
           <%= link_to 'View Cart', cart_path(session[:cart_id]), class: 'nav-link' %>
         </li>
+
         <% if customer_signed_in? %>
           <li class="nav-item">
-            <%= link_to 'Logout', destroy_customer_session_path, method: :delete, class: 'nav-link' %>
+            <%= link_to 'Orders', orders_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Logout", destroy_customer_session_path, data: { turbo_method: :delete }, class: "nav-link" %>
           </li>
         <% else %>
           <li class="nav-item">
             <%= link_to 'Login', new_customer_session_path, class: 'nav-link' %>
-          </li>
-          <li class="nav-item">
-            <%= link_to 'Sign Up', new_customer_registration_path, class: 'nav-link' %>
           </li>
         <% end %>
       </ul>

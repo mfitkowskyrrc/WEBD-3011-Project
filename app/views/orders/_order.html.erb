@@ -1,7 +1,6 @@
 <div class="mb-4">
-  <div class="card" id="<%= dom_id @order %>" style="<%= action_name == 'show' ? 'width: 80%; margin: auto;' : 'width: 95%' %>;">
+  <div class="card" id="<%= dom_id @order %>" style="<%= action_name == 'show' ? 'max-width: 800px; margin: auto;' : 'width: 95%' %>;">
     <div class="card-body">
-
       <div class="card-title-bar text-center py-3">
         <% if action_name == 'show' %>
           <h1 class="card-title mb-0">
@@ -15,7 +14,7 @@
       </div>
 
       <p class="card-text"><strong>Date:</strong> <%= @order.order_date %></p>
-      <p class="card-text"><strong>Total Amount:</strong> $<%= @order.total_amount %></p>
+      <p class="card-text"><strong>Total Amount:</strong> <%= number_to_currency(@order.total_amount, unit: "$", precision: 2) %></p>
 
       <h4 class="mt-4">Order Items</h4>
       <table class="table table-striped">
@@ -38,13 +37,6 @@
           <% end %>
         </tbody>
       </table>
-
-      <div class="d-flex justify-content-between mt-4">
-        <%= link_to "Back to orders", orders_path, class: "btn btn-outline-secondary btn-sm" %>
-        <%= link_to "Edit this order", edit_order_path(@order), class: "btn btn-outline-secondary btn-sm" %>
-        <%= button_to "Destroy this order", @order, method: :delete, class: "btn btn-danger btn-sm", data: { confirm: "Are you sure you want to delete this order?" } %>
-      </div>
-
     </div>
   </div>
 </div>

@@ -31,6 +31,20 @@
   <%= paginate @products, theme: 'bootstrap-5' %>
 </div>
 
-<div class="mt-4">
-  <%= link_to "New Product", new_product_path, class: 'btn btn-outline-dark btn-sm' %>
-</div>
+<% if current_customer&.admin? %>
+  <div class="container mt-4">
+    <div class="card ml-3" style="max-width: 300px;">
+      <div class="card-header">
+        <h2 class="mb-0">Admin Controls</h2>
+      </div>
+      <div class="card-body">
+        <div class="row justify-content-center">
+          <div class="text-center">
+            <%= link_to "New Product", new_product_path, class: 'btn btn-outline-dark btn-sm m-2' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+

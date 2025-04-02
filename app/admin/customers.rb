@@ -1,5 +1,21 @@
 ActiveAdmin.register Customer do
-  permit_params :name, :email, :address, :password, :password_confirmation
+  permit_params :name, :email, :address, :password, :password_confirmation, :admin
+
+  index do
+    selectable_column
+    id_column
+    column :name
+    column :email
+    column :address
+    column :admin
+    column :created_at
+    actions
+  end
+
+  filter :name
+  filter :email
+  filter :admin
+  filter :created_at
 
   form do |f|
     f.inputs "Customer Details" do
@@ -8,6 +24,7 @@ ActiveAdmin.register Customer do
       f.input :password
       f.input :password_confirmation
       f.input :address
+      f.input :admin, as: :boolean
     end
     f.actions
   end
@@ -17,6 +34,7 @@ ActiveAdmin.register Customer do
       row :name
       row :email
       row :address
+      row :admin
       row :created_at
       row :updated_at
     end
