@@ -5,12 +5,13 @@
 <h1>Products</h1>
 
 <div id="products">
-  <% @products.each do |product| %>
-    <%= render product %>
-    <p>
-      <%= link_to "Show this product", product %>
-    </p>
-  <% end %>
+  <div class="row">
+    <% @products.each do |product| %>
+      <div class="col-md-4 mb-4">
+        <%= render partial: "product", locals: { product: product, action_name: 'index' } %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
 <%= link_to "New product", new_product_path %>
