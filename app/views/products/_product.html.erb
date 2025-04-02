@@ -1,14 +1,29 @@
 <div class="mb-4">
   <div class="card" id="<%= dom_id product %>" style="<%= action_name == 'show' ? 'width: 80%; margin: auto;' : 'width: 95%' %>;">
     <div class="card-body">
-      <h5 class="card-title">
-        <%= link_to product.name, product_path(product), class: "text-decoration-none" %>
-      </h5>
+
+      <div class="card-title-bar text-center py-3">
+        <% if action_name == 'show' %>
+          <h1 class="card-title mb-0">
+            <%= link_to product.name, product_path(product), class: "text-decoration-none" %>
+          </h1>
+        <% else %>
+          <h5 class="card-title mb-0">
+            <%= link_to product.name, product_path(product), class: "text-decoration-none" %>
+          </h5>
+        <% end %>
+      </div>
+
       <% if product.image.attached? %>
-        <%= image_tag product.image.variant(resize_to_limit: [300, 300]) %>
+        <% if action_name == 'show' %>
+          <%= image_tag product.image.variant(resize_to_limit: [250, 250]), class: "full-size-image mx-auto d-block" %>
+        <% else %>
+          <%= image_tag product.image.variant(resize_to_limit: [100, 100]), class: "thumbnail-image mx-auto d-block" %>
+        <% end %>
       <% else %>
-        <p>No image available</p>
+        <p class="text-center">No image available</p>
       <% end %>
+
       <p class="card-text">
         <strong>Description:</strong>
         <% if action_name == 'show' %>
@@ -17,18 +32,22 @@
           <%= truncate(product.description, length: 50) %>
         <% end %>
       </p>
+
       <p class="card-text"><strong>Price:</strong> $<%= product.price %></p>
       <p class="card-text"><strong>Stock Quantity:</strong> <%= product.stock_quantity %></p>
-      <p class="card-text"><strong>Category:</strong> <%= product.category.name %></p>
-      <div>
-        <% if action_name == 'index' %>
-          <%= link_to 'View', product_path(product), class: 'btn btn-outline-dark text-decoration-none m-2' %>
-        <% elsif action_name == 'show' %>
-          <%= link_to "Back to products", products_path, class: 'btn btn-outline-dark text-decoration-none m-2' %>
-        <% end %>
+      <p class="card-text"><strong>Category:</strong> <%= link_to product.category.name, products_path(category: product.category.id), class: "text-decoration-none" %></p>
+
+      <div class="d-flex justify-content-between">
+
         <%= form_with url: add_product_cart_path(product_id: product.id), method: :post, class: 'd-inline' do %>
           <%= submit_tag 'Add to Cart', class: 'btn btn-outline-dark text-decoration-none m-2' %>
         <% end %>
+        <% if action_name == 'index' %>
+          <%= link_to 'View', product_path(product), class: 'btn btn-outline-dark text-decoration-none m-2' %>
+        <% elsif action_name == 'show' %>
+          <%= link_to "Back to products", products_path, class: 'btn btn-outline-dark text-decoration-none m-2 ml-auto' %>
+        <% end %>
+
       </div>
     </div>
   </div>

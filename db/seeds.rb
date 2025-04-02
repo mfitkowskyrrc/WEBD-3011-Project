@@ -1,6 +1,10 @@
 require 'httparty'
 require 'nokogiri'
+require 'open-uri'
 
+Product.destroy_all
+
+=begin
 def fetch_and_create_products_from_bgg(url, category_type)
   category = Category.find_or_create_by(name: category_type)
 
@@ -35,7 +39,7 @@ def fetch_and_create_products_from_bgg(url, category_type)
     sleep(2)
   end
 end
-
+=end
 
 def fetch_and_create_products_from_tcgdex(set_id, category_type)
   category = Category.find_or_create_by(name: category_type)
@@ -55,19 +59,27 @@ def fetch_and_create_products_from_tcgdex(set_id, category_type)
     set_name = card_data['set']['name']
     local_id = card_data['localId']
     description = card_data['text'] || "This card is card number #{local_id} of the #{set_name} set."
+    image_url = card_data['image']
+    webp_image_url = "#{image_url}/low.webp"
 
-    Product.create!(
+    product = Product.create!(
       name: name,
       description: description,
       category_id: category.id,
-      price: Faker::Number.decimal(l_digits: 2, r_digits: 3)
+      price: Faker::Number.decimal(l_digits: 2, r_digits: 3),
+      stock_quantity: 10
     )
+
+    if image_url.present?
+      image_file = OpenURI.open_uri(webp_image_url)
+      product.image.attach(io:image_file, filename: "#{name.parameterize}.webp")
+    end
+
     puts "card added: #{name}"
     sleep(0.3)
-
   end
 end
-
+=begin
 hot_board_games_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
 category_type = "Board Game"
 fetch_and_create_products_from_bgg(hot_board_games_url, category_type)
@@ -79,7 +91,7 @@ fetch_and_create_products_from_bgg(hot_rpg_url, category_type)
 hot_rpg_url = "https://boardgamegeek.com/xmlapi2/hot?type=videogame"
 category_type = "Video Game"
 fetch_and_create_products_from_bgg(hot_rpg_url, category_type)
-
+=end
 set_id = "base1"
 category_type = "Pokemon Card"
 fetch_and_create_products_from_tcgdex(set_id, category_type)
