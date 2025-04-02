@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
-  devise_for :customers
+  devise_for :customers, controllers: {
+    registrations: 'users/registrations'
+  }
 
   ActiveAdmin.routes(self)
   root "home#home"

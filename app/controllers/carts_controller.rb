@@ -12,5 +12,3 @@ class CartsController < ApplicationController
     else
       @cart.cart_items.create(product: product, quantity: 1)
     end
-  end
-end
