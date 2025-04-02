@@ -84,3 +84,4 @@ set_id = "base1"
 category_type = "Pokemon Card"
 fetch_and_create_products_from_tcgdex(set_id, category_type)
 
+AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
