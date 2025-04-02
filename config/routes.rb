@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resource :cart, only: [:show] do
     post 'add_product/:product_id', to: 'carts#add_product', as: 'add_product'
     post 'remove_product/:product_id', to: 'carts#remove_product', as: 'remove_product'
+    post 'update_quantity/:cart_item_id', to: 'carts#update_quantity', as: 'update_quantity'  # New route for updating quantity
     get 'checkout', to: 'carts#checkout', as: 'checkout'
     post 'complete_purchase', to: 'carts#complete_purchase', as: 'complete_purchase'
   end

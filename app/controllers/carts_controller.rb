@@ -1,5 +1,5 @@
 class CartsController < ApplicationController
-  before_action :set_cart, only: [:show, :add_product, :remove_product, :checkout, :complete_purchase]
+  before_action :set_cart, only: [:show, :add_product, :remove_product, :update_quantity, :checkout, :complete_purchase]
   before_action :authenticate_customer!, only: [:checkout, :complete_purchase]
 
   def show
@@ -27,16 +27,18 @@ class CartsController < ApplicationController
     redirect_to cart_path(@cart)
   end
 
+  def update_quantity
+    cart_item = @cart.cart_items.find(params[:cart_item_id])
+    new_quantity = params[:quantity].to_i
+    cart_item.update(quantity: new_quantity)
+    redirect_to cart_path(@cart)
+  end
+
   def checkout
     @cart_items = @cart.cart_items.includes(:product)
   end
 
   def complete_purchase
-    if @cart.nil?
-      redirect_to cart_path, alert: "No active cart found. Please add items to your cart before proceeding."
-      return
-    end
-
     if @cart.cart_items.empty?
       redirect_to cart_path, alert: "Your cart is empty!"
       return
@@ -81,5 +83,4 @@ class CartsController < ApplicationController
     end
     session[:cart_id] = @cart.id
   end
-
 end
