@@ -1,5 +1,9 @@
 class Customer < ApplicationRecord
-  has_many :orders, dependent: :destroy
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
+
+  has_many :carts
+  has_many :orders
+  has_many :cart_items, through: :carts
 
   validates :name, :email, :password, :address, presence: true
 
