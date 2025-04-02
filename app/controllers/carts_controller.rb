@@ -44,7 +44,6 @@ class CartsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         order = Order.create!(
-          customer_id: current_customer.id,
           order_date: Date.today,
           total_amount: @cart.cart_items.sum { |item| item.product.price * item.quantity }
         )
@@ -66,6 +65,7 @@ class CartsController < ApplicationController
 
         @cart.cart_items.destroy_all
         @cart.update!(status: 'completed', total_amount: 0)
+        session.delete(:cart_id)
 
         redirect_to order_path(order), notice: "Your order has been successfully placed!"
       end
@@ -74,11 +74,11 @@ class CartsController < ApplicationController
     end
   end
 
+
   private
 
   def set_cart
-    @cart = Cart.find_or_create_by!(customer_id: current_customer.id, status: 'active') do |cart|
-      cart.total_amount = 0
-    end
+    @cart = Cart.find_by(id: session[:cart_id]) || Cart.create!(status: 'active', total_amount: 0)
+    session[:cart_id] = @cart.id
   end
 end

@@ -36,12 +36,12 @@
         <li class="nav-item">
           <a class="nav-link" href="<%= admin_root_path %>">Admin Dashboard</a>
         </li>
+        <li class="nav-item">
+          <%= link_to 'View Cart', cart_path(session[:cart_id]), class: 'nav-link' %>
+        </li>
         <% if customer_signed_in? %>
           <li class="nav-item">
             <%= link_to 'Logout', destroy_customer_session_path, method: :delete, class: 'nav-link' %>
-          </li>
-          <li class="nav-item">
-            <%= link_to 'My Cart', cart_path(current_customer.cart), class: 'nav-link' %>
           </li>
         <% else %>
           <li class="nav-item">

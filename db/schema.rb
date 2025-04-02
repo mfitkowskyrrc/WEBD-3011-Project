@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_02_133200) do
+ActiveRecord::Schema[7.2].define(version: 2025_04_02_165520) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -76,7 +76,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_02_133200) do
   end
 
   create_table "carts", force: :cascade do |t|
-    t.integer "customer_id", null: false
+    t.integer "customer_id"
     t.string "status"
     t.decimal "total_amount"
     t.datetime "created_at", null: false
