@@ -21,7 +21,9 @@
         <% elsif action_name == 'show' %>
           <%= link_to "Back to products", products_path, class: 'btn btn-outline-dark text-decoration-none m-2' %>
         <% end %>
-        <%= link_to 'Add To Cart', product_path(product), class: 'btn btn-outline-dark text-decoration-none m-2' %>
+        <%= form_with url: add_product_cart_path(product_id: product.id), method: :post, class: 'd-inline' do %>
+          <%= submit_tag 'Add to Cart', class: 'btn btn-outline-dark text-decoration-none m-2' %>
+        <% end %>
       </div>
     </div>
   </div>

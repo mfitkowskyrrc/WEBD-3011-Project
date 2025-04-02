@@ -16,7 +16,8 @@ Rails.application.routes.draw do
 
   resource :cart, only: [:show] do
     post 'add_product/:product_id', to: 'carts#add_product', as: 'add_product'
-    patch 'update/:id', to: 'carts#update', as: 'update_cart_item'
+    post 'remove_product/:product_id', to: 'carts#remove_product', as: 'remove_product'
+    get 'checkout', to: 'carts#checkout', as: 'checkout'
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
@@ -24,5 +25,4 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-
 end
