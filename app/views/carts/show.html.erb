@@ -19,7 +19,9 @@
           <td><%= cart_item.quantity %></td>
           <td><%= number_to_currency(cart_item.product.price * cart_item.quantity) %></td>
           <td>
-            <%= link_to 'Remove', remove_product_cart_path(@cart, product_id: cart_item.product.id), method: :post, data: { confirm: 'Are you sure you want to remove this item from your cart?' } %>
+            <%= form_with url: remove_product_cart_path(product_id: cart_item.product.id), method: :post, class: 'd-inline' do %>
+              <%= submit_tag 'Remove', class: 'btn btn-danger btn-sm' %>
+            <% end %>
           </td>
         </tr>
       <% end %>
@@ -27,7 +29,7 @@
   </table>
 
   <div class="cart-total">
-    <h3>Total: $<%= number_to_currency(@cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
+    <h3>Total: <%= number_to_currency(@cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
   </div>
 
   <%= link_to 'Proceed to Checkout', checkout_cart_path, class: 'btn btn-primary' %>
