@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController
-  before_action :set_order, only: %i[ show edit update destroy ]
+  before_action :set_order, only: [:show, :edit, :update, :destroy]
 
   # GET /orders or /orders.json
   def index
@@ -8,6 +8,7 @@ class OrdersController < ApplicationController
 
   # GET /orders/1 or /orders/1.json
   def show
+    @order = Order.find(params[:id])
   end
 
   # GET /orders/new
@@ -17,6 +18,7 @@ class OrdersController < ApplicationController
 
   # GET /orders/1/edit
   def edit
+    @order = Order.find(params[:id])
   end
 
   # POST /orders or /orders.json

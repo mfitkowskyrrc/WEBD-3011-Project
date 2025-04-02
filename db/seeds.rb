@@ -32,7 +32,7 @@ def fetch_and_create_products_from_bgg(url, category_type)
   xml_data = Nokogiri::XML(response.body)
 
   item_ids = xml_data.xpath('//item').map { |item| item['id'] }
-  item_ids = item_ids.take(15)
+  item_ids = item_ids.take(30)
   item_ids.map(&:to_i)
 
   item_ids.each_slice(15) do |batch|
@@ -59,7 +59,8 @@ def fetch_and_create_products_from_bgg(url, category_type)
         name: name,
         description: description,
         category_id: category.id,
-        price: Faker::Number.decimal(l_digits: 2, r_digits: 3)
+        price: Faker::Number.decimal(l_digits: 2, r_digits: 3),
+        stock_quantity: 10
       )
 
       if image_url.present?
@@ -88,7 +89,7 @@ def fetch_and_create_products_from_bgg(url, category_type)
       puts "#{category.name} added, #{name}"
     end
 
-    sleep(2)
+    sleep(2.5)
   end
 end
 
@@ -100,7 +101,7 @@ def fetch_and_create_products_from_tcgdex(set_id, category_type)
   set_response = HTTParty.get(set_url)
   set_data = set_response.parsed_response
 
-  card_ids = set_data['cards'].map { |card| card['id'] }.first(5)
+  card_ids = set_data['cards'].map { |card| card['id'] }.first(50)
 
   card_ids.each do |card_id|
     card_url = "https://api.tcgdex.net/v2/en/cards/#{card_id}"

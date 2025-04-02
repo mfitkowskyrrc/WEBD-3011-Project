@@ -1,36 +1,46 @@
-<h1>Checkout</h1>
+<h1 class="text-center mb-4">Checkout</h1>
 
 <% if @cart.cart_items.present? %>
   <h3>Your Cart Summary</h3>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @cart.cart_items.each do |cart_item| %>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
         <tr>
-          <td><%= cart_item.product.name %></td>
-          <td><%= number_to_currency(cart_item.product.price) %></td>
-          <td><%= cart_item.quantity %></td>
-          <td><%= number_to_currency(cart_item.product.price * cart_item.quantity) %></td>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
         </tr>
+      </thead>
+      <tbody>
+        <% @cart.cart_items.each do |cart_item| %>
+          <tr>
+            <td><%= cart_item.product.name %></td>
+            <td><%= number_to_currency(cart_item.product.price) %></td>
+            <td><%= cart_item.quantity %></td>
+            <td><%= number_to_currency(cart_item.product.price * cart_item.quantity) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between mt-4">
+    <div>
+      <h3>Total: <%= number_to_currency(@cart.cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
+    </div>
+    <div>
+      <%= form_with url: complete_purchase_cart_path, method: :post, class: 'd-inline' do %>
+        <%= submit_tag 'Complete Purchase', class: 'btn btn-success btn-lg w-100' %>
       <% end %>
-    </tbody>
-  </table>
-
-  <h3>Total: <%= number_to_currency(@cart.cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
-
-  <%= form_with url: complete_purchase_cart_path, method: :post, class: 'd-inline' do %>
-    <%= submit_tag 'Complete Purchase', class: 'btn btn-success' %>
-  <% end %>
+    </div>
+  </div>
 
 <% else %>
   <p>Your cart is empty. Please add items to your cart before proceeding to checkout.</p>
 <% end %>
 
-<%= link_to 'Back to Cart', cart_path, class: 'btn btn-secondary' %>
+<div class="d-flex justify-content-between mt-3">
+  <%= link_to 'Back to Cart', cart_path, class: 'btn btn-outline-secondary btn-sm' %>
+</div>
