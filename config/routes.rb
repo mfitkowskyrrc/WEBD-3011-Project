@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
+
   ActiveAdmin.routes(self)
   root "home#home"
 
@@ -10,10 +11,11 @@ Rails.application.routes.draw do
   resources :categories
   resources :products
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resource :cart, only: [:show] do
+    post 'add_product/:product_id', to: 'carts#add_product', as: 'add_product'
+    patch 'update/:id', to: 'carts#update', as: 'update_cart_item'
+  end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/*
