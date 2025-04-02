@@ -59,12 +59,15 @@ end
 gem "httparty"
 gem "nokogiri"
 gem "faker"
+gem 'kaminari'
+gem 'bootstrap5-kaminari-views'
 
 gem 'activeadmin'
-
 # Plus integrations with:
 gem 'devise'
 gem 'cancancan'
 gem 'draper'
 gem 'pundit'
 gem 'sassc-rails'
+
+

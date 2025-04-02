@@ -2,14 +2,17 @@
 
 <% content_for :title, "Products" %>
 
-<h1>Products</h1>
+<h1 class="text-center mb-4">Products</h1>
 
-<div id="filter" class="d-flex justify-content-end">
+<div id="filter" class="d-flex justify-content-between mb-4">
+  <div>
+    <%= paginate @products, theme: 'bootstrap-5' %>
+  </div>
   <%= form_with(url: products_path, method: :get, local: true) do |form| %>
     <div class="form-group">
-      <%= form.label :category, "Filter by category:"%>
-      <%= form.select :category, options_from_collection_for_select(@categories, :id, :name, selected: params[:category]), prompt: "Select a Category", class: "form-control form-control-sm" %>
-      <%= form.submit "Filter", class: "btn btn-outline-dark btn-sm" %>
+      <%= form.label :category, "Filter by category:", class: 'mr-2' %>
+      <%= form.select :category, options_from_collection_for_select(@categories, :id, :name, selected: params[:category]), prompt: "Select a Category", class: "form-control form-control-sm w-auto" %>
+      <%= form.submit "Filter", class: "btn btn-outline-dark btn-sm ml-2" %>
     </div>
   <% end %>
 </div>
@@ -24,4 +27,10 @@
   </div>
 </div>
 
-<%= link_to "New product", new_product_path, class: 'btn btn-outline-dark' %>
+<div>
+  <%= paginate @products, theme: 'bootstrap-5' %>
+</div>
+
+<div class="mt-4">
+  <%= link_to "New Product", new_product_path, class: 'btn btn-outline-dark btn-sm' %>
+</div>

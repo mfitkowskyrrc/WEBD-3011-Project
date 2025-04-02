@@ -13,6 +13,7 @@ class ProductsController < ApplicationController
     else
       @products = Product.all
     end
+    @products = @products.page(params[:page]).per(15)
   end
 
   # GET /products/1 or /products/1.json
