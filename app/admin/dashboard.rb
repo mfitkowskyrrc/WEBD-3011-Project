@@ -9,25 +9,23 @@ ActiveAdmin.register_page "Dashboard" do
         small I18n.t("active_admin.dashboard_welcome.call_to_action")
       end
     end
+  end
+  menu priority: 1, label: "Dashboard"
 
-    # Here is an example of a simple dashboard with columns and panels.
-    #
-    # columns do
-    #   column do
-    #     panel "Recent Posts" do
-    #       ul do
-    #         Post.recent(5).map do |post|
-    #           li link_to(post.title, admin_post_path(post))
-    #         end
-    #       end
-    #     end
-    #   end
-
-    #   column do
-    #     panel "Info" do
-    #       para "Welcome to ActiveAdmin."
-    #     end
-    #   end
-    # end
-  end # content
+  content title: "Dashboard" do
+    div do
+      link_to "Back to Home", root_path, class: "button"
+    end
+    columns do
+      column do
+        panel "Recent Customers" do
+          ul do
+            Customer.last(10).map do |customer|
+              li link_to(customer.name, admin_customer_path(customer))
+            end
+          end
+        end
+      end
+    end
+  end
 end
