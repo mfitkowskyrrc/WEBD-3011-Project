@@ -6,11 +6,18 @@ class ProductsController < ApplicationController
   def index
     @categories = Category.all
 
-    @products = if params[:category].present?
-                  Product.where(category_id: params[:category])
-                else
-                  Product.all
-                end
+    # Apply search filter if present
+    @products = Product.all
+    if params[:search].present?
+      @products = @products.where("name LIKE ?", "%#{params[:search]}%")
+    end
+
+    # Apply category filter if present
+    if params[:category].present?
+      @products = @products.where(category_id: params[:category])
+    end
+
+    # Sorting based on the selected option
     case params[:sort]
     when 'recently_updated'
       @products = @products.order(updated_at: :desc) # Sort by most recently updated
