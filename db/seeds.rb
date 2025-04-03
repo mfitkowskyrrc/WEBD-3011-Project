@@ -11,20 +11,23 @@ Cart.destroy_all
 Customer.destroy_all
 
 customers = [
-  { name: "Ash", email: "ash@example.com", address: "Pallet Town", password: "password", admin: true },
-  { name: "Misty", email: "misty@example.com", address: "Cerulean City", password: "password", admin: false },
-  { name: "Brock", email: "brock@example.com", address: "Pewter City", password: "password", admin: false }
+  { name: "Ash", email: "ash@example.com", address: "Pallet Town", province: "Kanto", postal_code: "12345", password: "password", admin: true },
+  { name: "Misty", email: "misty@example.com", address: "Cerulean City", province: "Kanto", postal_code: "67890", password: "password", admin: false },
+  { name: "Brock", email: "brock@example.com", address: "Pewter City", province: "Kanto", postal_code: "11223", password: "password", admin: false }
 ]
 
 customers.each do |customer_data|
   Customer.find_or_create_by!(email: customer_data[:email]) do |customer|
     customer.name = customer_data[:name]
     customer.address = customer_data[:address]
+    customer.province = customer_data[:province]
+    customer.postal_code = customer_data[:postal_code]
     customer.password = customer_data[:password]
     customer.admin = customer_data[:admin]
   end
-  puts customer_data
+  puts "Created #{customer_data[:name]}"
 end
+
 
 
 def fetch_and_create_products_from_bgg(url, category_type)

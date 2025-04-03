@@ -5,7 +5,7 @@ class Customer < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :cart_items, through: :carts
 
-  validates :name, :email, :password, :address, presence: true
+  validates :name, :email, :password, :address, :province, :postal_code, presence: true
 
   after_create :create_cart
 
@@ -18,7 +18,7 @@ class Customer < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["address", "created_at", "email", "id", "name", "password", "updated_at"]
+    ["address", "created_at", "email", "id", "name", "password", "updated_at", "province", "postal_code"]
   end
 
   private

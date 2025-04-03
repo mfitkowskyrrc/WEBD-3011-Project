@@ -34,6 +34,16 @@
           <%= f.text_field :address, class: "form-control", required: true %>
         </div>
 
+        <div class="mb-3">
+          <%= f.label :province, class: "form-label" %><br />
+          <%= f.text_field :province, class: "form-control", required: true %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :postal_code, class: "form-label" %><br />
+          <%= f.text_field :postal_code, class: "form-control", required: true %>
+        </div>
+
         <div class="d-grid">
           <%= f.submit "Sign up", class: "btn btn-primary" %>
         </div>
