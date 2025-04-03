@@ -3,6 +3,6 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   def authenticate_admin!
-    redirect_to root_path, alert: 'You are not authorized to access this page.' unless current_customer&.admin?
+    redirect_to root_path, alert: "You are not authorized to access this page." unless current_customer&.admin?
   end
 end

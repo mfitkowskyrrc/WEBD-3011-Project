@@ -1,7 +1,7 @@
 class ProductsController < ApplicationController
-  before_action :authenticate_customer!, except: [:index, :show]
-  before_action :authorize_admin, only: [:new, :create, :edit, :update, :destroy]
-  before_action :set_product, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_customer!, except: [ :index, :show ]
+  before_action :authorize_admin, only: [ :new, :create, :edit, :update, :destroy ]
+  before_action :set_product, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @categories = Category.all
@@ -19,9 +19,9 @@ class ProductsController < ApplicationController
 
     # Sorting based on the selected option
     case params[:sort]
-    when 'recently_updated'
+    when "recently_updated"
       @products = @products.order(updated_at: :desc) # Sort by most recently updated
-    when 'newest'
+    when "newest"
       @products = @products.order(created_at: :desc) # Sort by newest
     else
       @products = @products.order(name: :asc) # Default to alphabetical order

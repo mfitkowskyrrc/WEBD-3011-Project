@@ -31,7 +31,7 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+ # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
  gem "image_processing", "~> 1.2"
 
 group :development, :test do
@@ -59,15 +59,13 @@ end
 gem "httparty"
 gem "nokogiri"
 gem "faker"
-gem 'kaminari'
-gem 'bootstrap5-kaminari-views'
+gem "kaminari"
+gem "bootstrap5-kaminari-views"
 
-gem 'activeadmin'
+gem "activeadmin"
 # Plus integrations with:
-gem 'devise'
-gem 'cancancan'
-gem 'draper'
-gem 'pundit'
-gem 'sassc-rails'
-
-
+gem "devise"
+gem "cancancan"
+gem "draper"
+gem "pundit"
+gem "sassc-rails"

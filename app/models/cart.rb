@@ -4,6 +4,6 @@ class Cart < ApplicationRecord
   has_many :products, through: :cart_items
 
   def self.create_for_customer(customer)
-    create!(customer: customer, status: 'pending')
+    create!(customer: customer, status: "pending")
   end
 end

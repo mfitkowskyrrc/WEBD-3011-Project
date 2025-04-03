@@ -1,6 +1,6 @@
 class CartsController < ApplicationController
-  before_action :set_cart, only: [:show, :add_product, :remove_product, :update_quantity, :checkout, :complete_purchase]
-  before_action :authenticate_customer!, only: [:checkout, :complete_purchase]
+  before_action :set_cart, only: [ :show, :add_product, :remove_product, :update_quantity, :checkout, :complete_purchase ]
+  before_action :authenticate_customer!, only: [ :checkout, :complete_purchase ]
 
   def show
     @cart_items = @cart.cart_items.includes(:product)
@@ -65,7 +65,7 @@ class CartsController < ApplicationController
           product.update!(stock_quantity: product.stock_quantity - cart_item.quantity)
         end
         @cart.cart_items.destroy_all
-        @cart.update!(status: 'completed', total_amount: 0)
+        @cart.update!(status: "completed", total_amount: 0)
         session.delete(:cart_id)
 
         redirect_to order_path(order), notice: "Your order has been successfully placed!"
@@ -77,9 +77,9 @@ class CartsController < ApplicationController
 
   def set_cart
     if customer_signed_in?
-      @cart = current_customer.cart || current_customer.create_cart(status: 'active', total_amount: 0)
+      @cart = current_customer.cart || current_customer.create_cart(status: "active", total_amount: 0)
     else
-      @cart = Cart.find_by(id: session[:cart_id]) || Cart.create!(status: 'active', total_amount: 0)
+      @cart = Cart.find_by(id: session[:cart_id]) || Cart.create!(status: "active", total_amount: 0)
     end
     session[:cart_id] = @cart.id
   end

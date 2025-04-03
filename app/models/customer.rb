@@ -14,11 +14,11 @@ class Customer < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["orders"]
+    [ "orders" ]
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["address", "created_at", "email", "id", "name", "password", "updated_at", "province", "postal_code"]
+    [ "address", "created_at", "email", "id", "name", "password", "updated_at", "province", "postal_code" ]
   end
 
   private

@@ -70,14 +70,14 @@ def fetch_and_create_products_from_bgg(url, category_type)
 
       if image_url.present?
         image_file = URI.open(image_url)
-        temp_input_file = Tempfile.new(["#{name.parameterize}", File.extname(image_url)])
+        temp_input_file = Tempfile.new([ "#{name.parameterize}", File.extname(image_url) ])
         IO.copy_stream(image_file, temp_input_file)
         image = MiniMagick::Image.open(temp_input_file.path)
 
         if image.type.downcase == "webp"
           product.image.attach(io: File.open(temp_input_file.path), filename: "#{name.parameterize}.webp", content_type: "image/webp")
         else
-          temp_output_file = Tempfile.new(["#{name.parameterize}", ".webp"])
+          temp_output_file = Tempfile.new([ "#{name.parameterize}", ".webp" ])
           begin
             image.format("webp") { |cmd| cmd.auto_orient }
             image.write(temp_output_file.path)
@@ -130,7 +130,7 @@ def fetch_and_create_products_from_tcgdex(set_id, category_type)
 
     if image_url.present?
       image_file = OpenURI.open_uri(webp_image_url)
-      product.image.attach(io:image_file, filename: "#{name.parameterize}.webp")
+      product.image.attach(io: image_file, filename: "#{name.parameterize}.webp")
     end
 
     puts "card added: #{name}"

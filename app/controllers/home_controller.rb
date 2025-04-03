@@ -1,9 +1,9 @@
 class HomeController < ApplicationController
-  before_action :set_content, only: [:edit, :update]
+  before_action :set_content, only: [ :edit, :update ]
 
   def home
-    @about_us_content = Content.find_by(section: 'about_us')
-    @contact_us_content = Content.find_by(section: 'contact_us')
+    @about_us_content = Content.find_by(section: "about_us")
+    @contact_us_content = Content.find_by(section: "contact_us")
   end
 
   def edit
