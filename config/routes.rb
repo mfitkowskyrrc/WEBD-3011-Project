@@ -23,6 +23,10 @@ Rails.application.routes.draw do
     post 'complete_purchase', to: 'carts#complete_purchase', as: 'complete_purchase'
   end
 
+  get 'home', to: 'home#home'
+  get 'home/edit/:section', to: 'home#edit', as: 'edit_content'
+  patch 'home/update', to: 'home#update', as: 'home_update'
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/*
