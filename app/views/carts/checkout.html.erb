@@ -30,8 +30,25 @@
     <div>
       <h3>Total: <%= number_to_currency(@cart.cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
     </div>
+
     <div>
-      <%= form_with url: complete_purchase_cart_path, method: :post, class: 'd-inline' do %>
+      <%= form_with url: complete_purchase_cart_path, method: :post, class: 'd-inline' do |form| %>
+
+        <%# Display province and postal code fields if not filled out %>
+        <% if current_customer.province.blank? %>
+          <div class="mb-3">
+            <%= form.label :province, "Province", class: "form-label" %>
+            <%= form.text_field :province, class: "form-control" %>
+          </div>
+        <% end %>
+
+        <% if current_customer.postal_code.blank? %>
+          <div class="mb-3">
+            <%= form.label :postal_code, "Postal Code", class: "form-label" %>
+            <%= form.text_field :postal_code, class: "form-control" %>
+          </div>
+        <% end %>
+
         <%= submit_tag 'Complete Purchase', class: 'btn btn-success btn-lg w-100' %>
       <% end %>
     </div>

@@ -1,5 +1,5 @@
 ActiveAdmin.register Customer do
-  permit_params :name, :email, :address, :password, :password_confirmation, :admin
+  permit_params :name, :email, :address, :province, :password, :password_confirmation, :admin
 
   index do
     selectable_column
@@ -7,6 +7,7 @@ ActiveAdmin.register Customer do
     column :name
     column :email
     column :address
+    column :province
     column :admin
     column :created_at
     actions
@@ -14,6 +15,12 @@ ActiveAdmin.register Customer do
 
   filter :name
   filter :email
+  filter :province, as: :select, collection: [
+    ['Alberta', 'AB'], ['British Columbia', 'BC'], ['Manitoba', 'MB'], ['New Brunswick', 'NB'],
+    ['Newfoundland and Labrador', 'NL'], ['Northwest Territories', 'NT'], ['Nova Scotia', 'NS'],
+    ['Nunavut', 'NU'], ['Ontario', 'ON'], ['Prince Edward Island', 'PE'],
+    ['Quebec', 'QC'], ['Saskatchewan', 'SK'], ['Yukon', 'YT']
+  ]
   filter :admin
   filter :created_at
 
@@ -24,6 +31,12 @@ ActiveAdmin.register Customer do
       f.input :password
       f.input :password_confirmation
       f.input :address
+      f.input :province, as: :select, collection: [
+        ['Alberta', 'AB'], ['British Columbia', 'BC'], ['Manitoba', 'MB'], ['New Brunswick', 'NB'],
+        ['Newfoundland and Labrador', 'NL'], ['Northwest Territories', 'NT'], ['Nova Scotia', 'NS'],
+        ['Nunavut', 'NU'], ['Ontario', 'ON'], ['Prince Edward Island', 'PE'],
+        ['Quebec', 'QC'], ['Saskatchewan', 'SK'], ['Yukon', 'YT']
+      ], prompt: "Select Province"
       f.input :admin, as: :boolean
     end
     f.actions
@@ -34,6 +47,7 @@ ActiveAdmin.register Customer do
       row :name
       row :email
       row :address
+      row :province
       row :admin
       row :created_at
       row :updated_at

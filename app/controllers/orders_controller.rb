@@ -1,5 +1,6 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: [ :show, :edit, :update, :destroy ]
+  before_action :authorize_admin, only: [ :new, :create ]
 
   def index
     if current_customer.admin?
@@ -19,6 +20,7 @@ class OrdersController < ApplicationController
 
   def new
     @order = Order.new
+    @order.customer = current_customer
   end
 
   def edit
@@ -27,6 +29,10 @@ class OrdersController < ApplicationController
 
   def create
     @order = Order.new(order_params)
+    @order.customer = current_customer
+    @order.province = current_customer.province
+    @order.postal_code = current_customer.postal_code
+    @order.status = "processing"
 
     respond_to do |format|
       if @order.save
@@ -61,11 +67,16 @@ class OrdersController < ApplicationController
   end
 
   private
-    def set_order
-      @order = Order.find(params[:id])
-    end
 
-    def order_params
-      params.require(:order).permit(:customer_id, :order_date, :total_amount)
-    end
+  def set_order
+    @order = Order.find(params[:id])
+  end
+
+  def order_params
+    params.require(:order).permit(:customer_id, :order_date, :total_amount, :province, :postal_code, :status)
+  end
+
+  def authorize_admin
+    redirect_to root_path, alert: "You are not authorized to perform this action." unless current_customer.admin?
+  end
 end

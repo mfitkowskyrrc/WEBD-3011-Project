@@ -11,9 +11,9 @@ Cart.destroy_all
 Customer.destroy_all
 
 customers = [
-  { name: "Ash", email: "ash@example.com", address: "Pallet Town", province: "Kanto", postal_code: "12345", password: "password", admin: true },
-  { name: "Misty", email: "misty@example.com", address: "Cerulean City", province: "Kanto", postal_code: "67890", password: "password", admin: false },
-  { name: "Brock", email: "brock@example.com", address: "Pewter City", province: "Kanto", postal_code: "11223", password: "password", admin: false }
+  { name: "Ash", email: "ash@example.com", address: "Pallet Town", province: "Manitoba", postal_code: "12345", password: "password", admin: true },
+  { name: "Misty", email: "misty@example.com", address: "Cerulean City", province: "Ontario", postal_code: "67890", password: "password", admin: false },
+  { name: "Brock", email: "brock@example.com", address: "Pewter City", province: "Alberta", postal_code: "11223", password: "password", admin: false }
 ]
 
 customers.each do |customer_data|

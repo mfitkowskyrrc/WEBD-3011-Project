@@ -1,8 +1,6 @@
-<%= form_with(model: order) do |form| %>
+<%= form_with(model: order, class: "container mt-3") do |form| %>
   <% if order.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(order.errors.count, "error") %> prohibited this order from being saved:</h2>
-
+    <div class="alert alert-danger">
       <ul>
         <% order.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,22 +9,39 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :customer_id, style: "display: block" %>
-    <%= form.text_field :customer_id %>
+  <% if current_customer.admin? %>
+    <div class="mb-3">
+      <%= form.label :customer_id, "Customer ID", class: "form-label" %>
+      <%= form.number_field :customer_id, class: "form-control", value: @order.customer_id %>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :order_date, "Order Date", class: "form-label" %>
+    <%= form.date_field :order_date, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :total_amount, "Total Amount", class: "form-label" %>
+    <%= form.number_field :total_amount, step: 0.01, class: "form-control", value: @order.total_amount %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :province, "Province", class: "form-label" %>
+    <%= form.select :province, Order::PROVINCES.keys, { prompt: "Select a Province" }, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :postal_code, "Postal Code", class: "form-label" %>
+    <%= form.text_field :postal_code, value: current_customer.postal_code, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :status, "Status", class: "form-label" %>
+    <%= form.select :status, options_for_select(["processing", "processed", "shipped"], selected: "processing"), class: "form-select" %>
   </div>
 
   <div>
-    <%= form.label :order_date, style: "display: block" %>
-    <%= form.date_field :order_date %>
-  </div>
-
-  <div>
-    <%= form.label :total_amount, style: "display: block" %>
-    <%= form.text_field :total_amount %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+    <%= form.submit "Save Order", class: "btn btn-primary" %>
   </div>
 <% end %>
