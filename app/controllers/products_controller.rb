@@ -11,6 +11,14 @@ class ProductsController < ApplicationController
                 else
                   Product.all
                 end
+    case params[:sort]
+    when 'recently_updated'
+      @products = @products.order(updated_at: :desc) # Sort by most recently updated
+    when 'newest'
+      @products = @products.order(created_at: :desc) # Sort by newest
+    else
+      @products = @products.order(name: :asc) # Default to alphabetical order
+    end
 
     @products = @products.page(params[:page]).per(15)
   end

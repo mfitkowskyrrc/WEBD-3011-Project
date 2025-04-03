@@ -4,17 +4,32 @@
 
 <h1 class="text-center mb-4">Products</h1>
 
-<div id="filter" class="d-flex justify-content-between mb-4">
-  <div>
-    <%= paginate @products, theme: 'bootstrap-5' %>
-  </div>
-  <%= form_with(url: products_path, method: :get, local: true) do |form| %>
-    <div class="form-group">
-      <%= form.label :category, "Filter by category:", class: 'mr-2' %>
-      <%= form.select :category, options_from_collection_for_select(@categories, :id, :name, selected: params[:category]), prompt: "Select a Category", class: "form-control form-control-sm w-auto" %>
-      <%= form.submit "Filter", class: "btn btn-outline-dark btn-sm ml-2" %>
+<div id="filter" class="d-flex justify-content-end mb-4">
+  <div class="container">
+    <div class="row">
+      <!-- Sort By Section -->
+      <div class="col-md-6 d-flex mb-2 mb-md-0">
+        <%= form_with(url: products_path, method: :get, local: true) do |form| %>
+          <div class="d-flex">
+            <%= form.label :sort, "Sort by:", class: 'mr-3' %>
+            <%= form.select :sort, options_for_select([['Newest', 'newest'], ['Most Recently Updated', 'recently_updated']], selected: params[:sort]), class: 'form-control form-control-sm w-auto' %>
+            <%= form.submit "Apply", class: "btn btn-outline-dark btn-sm ml-2" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Filter By Category Section -->
+      <div class="col-md-6">
+        <%= form_with(url: products_path, method: :get, local: true) do |form| %>
+          <div class="d-flex">
+            <%= form.label :category, "Filter by category:", class: 'mr-2' %>
+            <%= form.select :category, options_from_collection_for_select(@categories, :id, :name, selected: params[:category]), prompt: "Select a Category", class: "form-control form-control-sm w-auto" %>
+            <%= form.submit "Filter", class: "btn btn-outline-dark btn-sm ml-2" %>
+          </div>
+        <% end %>
+      </div>
     </div>
-  <% end %>
+  </div>
 </div>
 
 <div id="products">
@@ -27,7 +42,8 @@
   </div>
 </div>
 
-<div>
+<!-- Pagination (ensure it stays centered and at the bottom) -->
+<div class="d-flex justify-content-center">
   <%= paginate @products, theme: 'bootstrap-5' %>
 </div>
 
@@ -47,4 +63,3 @@
     </div>
   </div>
 <% end %>
-
