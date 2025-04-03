@@ -1,34 +1,33 @@
 class ProductsController < ApplicationController
-  before_action :authenticate_customer!, except: [ :index, :show ]
-  before_action :authorize_admin, only: [ :new, :create, :edit, :update, :destroy ]
-  before_action :set_product, only: [ :show, :edit, :update, :destroy ]
+  before_action :authenticate_customer!, except: [:index, :show]
+  before_action :authorize_admin, only: [:new, :create, :edit, :update, :destroy]
+  before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   def index
     @categories = Category.all
-
-    # Apply search filter if present
     @products = Product.all
+
     if params[:search].present?
-      @products = @products.where("name LIKE ?", "%#{params[:search]}%")
+      search_term = "%#{params[:search].downcase}%"
+      @products = @products.where("LOWER(name) LIKE ? OR LOWER(description) LIKE ?", search_term, search_term)
     end
 
-    # Apply category filter if present
-    if params[:category].present?
-      @products = @products.where(category_id: params[:category])
+    if params[:category_id].present? && params[:category_id].to_i.positive?
+      @products = @products.where(category_id: params[:category_id])
     end
 
-    # Sorting based on the selected option
     case params[:sort]
     when "recently_updated"
-      @products = @products.order(updated_at: :desc) # Sort by most recently updated
+      @products = @products.order(updated_at: :desc)
     when "newest"
-      @products = @products.order(created_at: :desc) # Sort by newest
+      @products = @products.order(created_at: :desc)
     else
-      @products = @products.order(name: :asc) # Default to alphabetical order
+      @products = @products.order(name: :asc)
     end
 
     @products = @products.page(params[:page]).per(15)
   end
+
 
   def show
   end
