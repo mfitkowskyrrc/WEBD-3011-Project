@@ -31,46 +31,18 @@
       <h3>Total: <%= number_to_currency(@cart.cart_items.sum { |item| item.product.price * item.quantity }) %></h3>
     </div>
 
-    <div>
-      <%= form_with url: complete_purchase_cart_path, method: :post, class: 'd-inline' do |form| %>
-        <%= javascript_include_tag "https://js.stripe.com/v3/" %>
+    <div class="w-50">
+      <!-- Payment form -->
+      <div>
+        <div id="card-element" class="form-control p-2 mb-3"></div>
+        <div id="card-errors" class="text-danger mb-3" role="alert"></div>
+        <button id="checkout-button" type="button" class="btn btn-success btn-lg w-100">
+          Complete Purchase
+        </button>
+      </div>
 
-        <%= javascript_tag do %>
-          const stripe = Stripe("<%= ENV['STRIPE_PUBLIC_KEY'] %>");  // Inject the key from the environment variable
-          const elements = stripe.elements();
-          const cardElement = elements.create("card");
-          cardElement.mount("#card-element");
-
-          const checkoutButton = document.getElementById("checkout-button");
-
-          checkoutButton.addEventListener("click", function (event) {
-            event.preventDefault();
-
-            fetch("/carts/create_checkout_session", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                cart_id: "<%= @cart.id %>",  // Send cart ID to the server
-              }),
-            })
-              .then((response) => response.json())
-              .then((sessionId) => {
-                return stripe.redirectToCheckout({ sessionId: sessionId });
-              })
-              .then((result) => {
-                if (result.error) {
-                  alert(result.error.message);
-                }
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-                alert("An error occurred. Please try again.");
-              });
-          });
-        <% end %>
-
+      <!-- Province & Postal Code Form -->
+      <%= form_with url: complete_purchase_cart_path, method: :post, local: true do |form| %>
         <% if current_customer.province.blank? %>
           <div class="mb-3">
             <%= form.label :province, "Province", class: "form-label" %>
@@ -84,15 +56,6 @@
             <%= form.text_field :postal_code, class: "form-control" %>
           </div>
         <% end %>
-
-        <h4>Enter Your Payment Details</h4>
-
-        <div class="mb-3">
-          <div id="card-element" class="form-control"></div>
-          <div id="card-errors" class="text-danger mt-2" role="alert"></div>
-        </div>
-
-        <%= submit_tag 'Complete Purchase', class: 'btn btn-success btn-lg w-100', id: "checkout-button" %>
       <% end %>
     </div>
   </div>
@@ -104,3 +67,47 @@
 <div class="d-flex justify-content-between mt-3">
   <%= link_to 'Back to Cart', cart_path, class: 'btn btn-outline-secondary btn-sm' %>
 </div>
+
+<%= javascript_include_tag "https://js.stripe.com/v3/" %>
+<script>
+  document.addEventListener("turbo:load", function() {
+    const el = document.getElementById("card-element");
+    if (!el) return;
+
+    const stripe = Stripe("<%= ENV['STRIPE_PUBLIC_KEY'] %>");
+    const elements = stripe.elements();
+    const card = elements.create("card");
+    card.mount(el);
+
+    const btn = document.getElementById("checkout-button");
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute('content');
+
+      try {
+        const resp = await fetch("<%= create_checkout_session_cart_path %>", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken
+          },
+          body: JSON.stringify({ cart_id: <%= @cart.id %> })
+        });
+
+        const data = await resp.json();
+        if (resp.status !== 200) {
+          throw new Error(data.error || `Status ${resp.status}`);
+        }
+        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+
+      } catch (err) {
+        console.error("Checkout error:", err);
+        alert(`Payment setup failed: ${err.message}`);
+      }
+    });
+  });
+</script>

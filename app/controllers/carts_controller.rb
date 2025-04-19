@@ -1,6 +1,6 @@
 class CartsController < ApplicationController
-  before_action :set_cart, only: [ :show, :add_product, :remove_product, :update_quantity, :checkout, :complete_purchase ]
-  before_action :authenticate_customer!, only: [ :checkout, :complete_purchase ]
+  before_action :set_cart, only: [:show, :add_product, :remove_product, :update_quantity, :checkout, :complete_purchase, :create_checkout_session]
+  before_action :authenticate_customer!, only: [:checkout, :complete_purchase, :create_checkout_session]
 
   def show
     @cart_items = @cart.cart_items.includes(:product)
@@ -36,34 +36,30 @@ class CartsController < ApplicationController
 
   def checkout
     @cart_items = @cart.cart_items.includes(:product)
-    @stripe_public_key = ENV["STRIPE_PUBLIC_KEY"]
+    @stripe_publishable_key = ENV["STRIPE_PUBLIC_KEY"]
   end
 
   def create_checkout_session
+    # Ensures @cart is set via before_action
     begin
-      subtotal = @cart.cart_items.sum { |item| item.product.price * item.quantity }
-
       session = Stripe::Checkout::Session.create({
         payment_method_types: ['card'],
         line_items: @cart.cart_items.map do |item|
           {
             price_data: {
               currency: 'cad',
-              product_data: {
-                name: item.product.name,
-              },
-              unit_amount: (item.product.price * 100).to_i,
+              product_data: { name: item.product.name },
+              unit_amount: (item.product.price * 100).to_i
             },
-            quantity: item.quantity,
+            quantity: item.quantity
           }
         end,
         mode: 'payment',
         success_url: checkout_success_cart_url,
-        cancel_url: checkout_cancel_cart_url,
+        cancel_url: checkout_cancel_cart_url
       })
 
       render json: { sessionId: session.id }
-
     rescue Stripe::StripeError => e
       render json: { error: e.message }, status: :unprocessable_entity
     end
@@ -80,28 +76,24 @@ class CartsController < ApplicationController
       redirect_to checkout_cart_path and return
     end
 
-    subtotal = @cart.cart_items.sum { |item| item.product.price * item.quantity }
-    tax_rate = Order::PROVINCES[current_customer.province]
-    tax_amount = subtotal * tax_rate
+    subtotal    = @cart.cart_items.sum { |item| item.product.price * item.quantity }
+    tax_rate    = Order::PROVINCES[current_customer.province]
+    tax_amount  = subtotal * tax_rate
     total_amount = (subtotal + tax_amount).round(2)
 
     payment_method_id = params[:payment_method_id]
-
     if payment_method_id.blank?
       render json: { error: "Payment method is missing." }, status: :unprocessable_entity and return
     end
 
     begin
-      intent = Stripe::PaymentIntent.create({
+      intent = Stripe::PaymentIntent.create(
         amount: (total_amount * 100).to_i,
         currency: 'cad',
         payment_method: payment_method_id,
         confirm: true,
-        metadata: {
-          customer_id: current_customer.id,
-          cart_id: @cart.id
-        }
-      })
+        metadata: { customer_id: current_customer.id, cart_id: @cart.id }
+      )
 
       ActiveRecord::Base.transaction do
         order = Order.create!(
@@ -138,7 +130,6 @@ class CartsController < ApplicationController
           format.json { render json: { success: true, order_id: order.id } }
         end
       end
-
     rescue Stripe::CardError => e
       render json: { error: e.message }, status: :payment_required
     rescue => e
