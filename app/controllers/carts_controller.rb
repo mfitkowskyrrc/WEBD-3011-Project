@@ -36,31 +36,74 @@ class CartsController < ApplicationController
 
   def checkout
     @cart_items = @cart.cart_items.includes(:product)
+    @stripe_public_key = ENV["STRIPE_PUBLIC_KEY"]
+  end
+
+  def create_checkout_session
+    begin
+      subtotal = @cart.cart_items.sum { |item| item.product.price * item.quantity }
+
+      session = Stripe::Checkout::Session.create({
+        payment_method_types: ['card'],
+        line_items: @cart.cart_items.map do |item|
+          {
+            price_data: {
+              currency: 'cad',
+              product_data: {
+                name: item.product.name,
+              },
+              unit_amount: (item.product.price * 100).to_i,
+            },
+            quantity: item.quantity,
+          }
+        end,
+        mode: 'payment',
+        success_url: checkout_success_cart_url,
+        cancel_url: checkout_cancel_cart_url,
+      })
+
+      render json: { sessionId: session.id }
+
+    rescue Stripe::StripeError => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
   end
 
   def complete_purchase
-    if current_customer.province.blank? || current_customer.postal_code.blank?
-      flash[:alert] = "Please fill in your province and postal code to complete the purchase."
-      redirect_to checkout_cart_path and return
-    end
-
     if @cart.cart_items.empty?
       redirect_to cart_path, alert: "Your cart is empty!"
       return
     end
 
+    if current_customer.province.blank? || current_customer.postal_code.blank?
+      flash[:alert] = "Please fill in your province and postal code to complete the purchase."
+      redirect_to checkout_cart_path and return
+    end
+
+    subtotal = @cart.cart_items.sum { |item| item.product.price * item.quantity }
+    tax_rate = Order::PROVINCES[current_customer.province]
+    tax_amount = subtotal * tax_rate
+    total_amount = (subtotal + tax_amount).round(2)
+
+    payment_method_id = params[:payment_method_id]
+
+    if payment_method_id.blank?
+      render json: { error: "Payment method is missing." }, status: :unprocessable_entity and return
+    end
+
     begin
+      intent = Stripe::PaymentIntent.create({
+        amount: (total_amount * 100).to_i,
+        currency: 'cad',
+        payment_method: payment_method_id,
+        confirm: true,
+        metadata: {
+          customer_id: current_customer.id,
+          cart_id: @cart.id
+        }
+      })
+
       ActiveRecord::Base.transaction do
-        subtotal = @cart.cart_items.sum { |cart_item| cart_item.product.price * cart_item.quantity }
-
-        tax_rate = Order::PROVINCES[current_customer.province]
-Rails.logger.debug "Province: #{current_customer.province}"
-Rails.logger.debug "Tax rate: #{Order::PROVINCES[current_customer.province]}"
-        tax_amount = subtotal * tax_rate
-
-
-        total_amount = subtotal + tax_amount
-
         order = Order.create!(
           order_date: Date.today,
           total_amount: total_amount,
@@ -74,7 +117,6 @@ Rails.logger.debug "Tax rate: #{Order::PROVINCES[current_customer.province]}"
           product = cart_item.product
 
           if product.stock_quantity < cart_item.quantity
-            Rails.logger.error "Insufficient stock for #{product.name}: requested #{cart_item.quantity}, available #{product.stock_quantity}"
             raise ActiveRecord::Rollback, "Insufficient stock for #{product.name}"
           end
 
@@ -83,6 +125,7 @@ Rails.logger.debug "Tax rate: #{Order::PROVINCES[current_customer.province]}"
             quantity: cart_item.quantity,
             price: product.price
           )
+
           product.update!(stock_quantity: product.stock_quantity - cart_item.quantity)
         end
 
@@ -90,12 +133,26 @@ Rails.logger.debug "Tax rate: #{Order::PROVINCES[current_customer.province]}"
         @cart.update!(status: "completed", total_amount: 0)
         session.delete(:cart_id)
 
-        redirect_to order_path(order), notice: "Your order has been successfully placed!"
+        respond_to do |format|
+          format.html { redirect_to order_path(order), notice: "Your order has been successfully placed!" }
+          format.json { render json: { success: true, order_id: order.id } }
+        end
       end
-    rescue ActiveRecord::Rollback => e
-      flash[:alert] = e.message
-      redirect_to checkout_cart_path
+
+    rescue Stripe::CardError => e
+      render json: { error: e.message }, status: :payment_required
+    rescue => e
+      logger.error "Order failed: #{e.message}"
+      render json: { error: "There was an issue completing your purchase." }, status: :internal_server_error
     end
+  end
+
+  def checkout_success
+    redirect_to order_path(Order.last), notice: 'Your payment was successful!'
+  end
+
+  def checkout_cancel
+    redirect_to cart_path, alert: 'Your payment was canceled.'
   end
 
   private
