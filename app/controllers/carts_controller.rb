@@ -54,6 +54,8 @@ class CartsController < ApplicationController
         subtotal = @cart.cart_items.sum { |cart_item| cart_item.product.price * cart_item.quantity }
 
         tax_rate = Order::PROVINCES[current_customer.province]
+Rails.logger.debug "Province: #{current_customer.province}"
+Rails.logger.debug "Tax rate: #{Order::PROVINCES[current_customer.province]}"
         tax_amount = subtotal * tax_rate
 
 

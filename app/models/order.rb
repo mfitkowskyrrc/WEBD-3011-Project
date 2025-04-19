@@ -20,11 +20,19 @@ class Order < ApplicationRecord
     "Nova Scotia" => 0.15,
     "Ontario" => 0.13,
     "Prince Edward Island" => 0.15,
-    "Quebec" => 0.14975,
+    "Quebec" => 0.15,
     "Saskatchewan" => 0.11
   }
 
   def calculate_tax_rate
     PROVINCES[province]
+  end
+
+  def tax_amount
+    subtotal * calculate_tax_rate
+  end
+
+  def subtotal
+    order_items.sum { |item| item.price * item.quantity }
   end
 end

@@ -17,8 +17,8 @@
 
       <p class="card-text"><strong>Subtotal:</strong> <%= number_to_currency(@order.subtotal, unit: "$", precision: 2) %></p>
 
-      <% if @order.tax_rate.present? %>
-        <p class="card-text"><strong>Tax Rate:</strong> <%= number_to_percentage(@order.tax_rate * 100, precision: 2) %></p>
+      <% if @order.calculate_tax_rate.present? %>
+        <p class="card-text"><strong>Tax Rate:</strong> <%= number_to_percentage(@order.calculate_tax_rate * 100, precision: 2) %></p>
       <% end %>
       <p class="card-text"><strong>Tax Amount:</strong> <%= number_to_currency(@order.tax_amount, unit: "$", precision: 2) %></p>
 

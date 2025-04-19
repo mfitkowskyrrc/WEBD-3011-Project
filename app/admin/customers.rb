@@ -15,12 +15,7 @@ ActiveAdmin.register Customer do
 
   filter :name
   filter :email
-  filter :province, as: :select, collection: [
-    ['Alberta', 'AB'], ['British Columbia', 'BC'], ['Manitoba', 'MB'], ['New Brunswick', 'NB'],
-    ['Newfoundland and Labrador', 'NL'], ['Northwest Territories', 'NT'], ['Nova Scotia', 'NS'],
-    ['Nunavut', 'NU'], ['Ontario', 'ON'], ['Prince Edward Island', 'PE'],
-    ['Quebec', 'QC'], ['Saskatchewan', 'SK'], ['Yukon', 'YT']
-  ]
+  filter :province, as: :select, collection: Order::PROVINCES.keys
   filter :admin
   filter :created_at
 
@@ -31,12 +26,7 @@ ActiveAdmin.register Customer do
       f.input :password
       f.input :password_confirmation
       f.input :address
-      f.input :province, as: :select, collection: [
-        ['Alberta', 'AB'], ['British Columbia', 'BC'], ['Manitoba', 'MB'], ['New Brunswick', 'NB'],
-        ['Newfoundland and Labrador', 'NL'], ['Northwest Territories', 'NT'], ['Nova Scotia', 'NS'],
-        ['Nunavut', 'NU'], ['Ontario', 'ON'], ['Prince Edward Island', 'PE'],
-        ['Quebec', 'QC'], ['Saskatchewan', 'SK'], ['Yukon', 'YT']
-      ], prompt: "Select Province"
+      f.input :province, as: :select, collection: Order::PROVINCES.keys, prompt: "Select Province"
       f.input :admin, as: :boolean
     end
     f.actions
