@@ -34,7 +34,6 @@
     <div>
       <%= form_with url: complete_purchase_cart_path, method: :post, class: 'd-inline' do |form| %>
 
-        <%# Display province and postal code fields if not filled out %>
         <% if current_customer.province.blank? %>
           <div class="mb-3">
             <%= form.label :province, "Province", class: "form-label" %>

@@ -69,3 +69,5 @@ gem "cancancan"
 gem "draper"
 gem "pundit"
 gem "sassc-rails"
+gem "stripe"
+gem 'dotenv-rails'
