@@ -32,16 +32,6 @@
     </div>
 
     <div class="w-50">
-      <!-- Payment form -->
-      <div>
-        <div id="card-element" class="form-control p-2 mb-3"></div>
-        <div id="card-errors" class="text-danger mb-3" role="alert"></div>
-        <button id="checkout-button" type="button" class="btn btn-success btn-lg w-100">
-          Complete Purchase
-        </button>
-      </div>
-
-      <!-- Province & Postal Code Form -->
       <%= form_with url: complete_purchase_cart_path, method: :post, local: true do |form| %>
         <% if current_customer.province.blank? %>
           <div class="mb-3">
@@ -56,6 +46,11 @@
             <%= form.text_field :postal_code, class: "form-control" %>
           </div>
         <% end %>
+
+        <!-- Button to trigger redirect to Stripe Checkout -->
+        <button id="checkout-button" type="button" class="btn btn-success btn-lg w-100">
+          Complete Purchase
+        </button>
       <% end %>
     </div>
   </div>
@@ -71,21 +66,13 @@
 <%= javascript_include_tag "https://js.stripe.com/v3/" %>
 <script>
   document.addEventListener("turbo:load", function() {
-    const el = document.getElementById("card-element");
-    if (!el) return;
-
-    const stripe = Stripe("<%= ENV['STRIPE_PUBLIC_KEY'] %>");
-    const elements = stripe.elements();
-    const card = elements.create("card");
-    card.mount(el);
+    const stripe = Stripe("<%= ENV['STRIPE_PUBLIC_KEY'] %>"); // ✅ Define Stripe here
 
     const btn = document.getElementById("checkout-button");
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
 
-      const csrfToken = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute('content');
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
       try {
         const resp = await fetch("<%= create_checkout_session_cart_path %>", {
@@ -102,6 +89,7 @@
         if (resp.status !== 200) {
           throw new Error(data.error || `Status ${resp.status}`);
         }
+
         await stripe.redirectToCheckout({ sessionId: data.sessionId });
 
       } catch (err) {
@@ -111,3 +99,4 @@
     });
   });
 </script>
+

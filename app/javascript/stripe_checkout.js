@@ -1,15 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const stripe = Stripe("your-publishable-key-here");
-  const elements = stripe.elements();
-  const cardElement = elements.create("card");
-  cardElement.mount("#card-element");
+  const stripe = Stripe("<%= ENV['STRIPE_PUBLIC_KEY'] %>");
 
   const checkoutButton = document.getElementById("checkout-button");
 
   checkoutButton.addEventListener("click", function (event) {
     event.preventDefault();
 
-    fetch("/carts/create_checkout_session", {
+    fetch("<%= create_checkout_session_cart_path %>", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -19,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }),
     })
       .then((response) => response.json())
-      .then((sessionId) => {
-        return stripe.redirectToCheckout({ sessionId: sessionId });
+      .then((data) => {
+        return stripe.redirectToCheckout({ sessionId: data.sessionId });
       })
       .then((result) => {
         if (result.error) {
