@@ -14,7 +14,7 @@
       </div>
 
       <p class="card-text"><strong>Date:</strong> <%= @order.order_date %></p>
-
+      <p class="card-text"><strong>Status:</strong> <%= @order.status.capitalize %></p>
       <p class="card-text"><strong>Subtotal:</strong> <%= number_to_currency(@order.subtotal, unit: "$", precision: 2) %></p>
 
       <% if @order.calculate_tax_rate.present? %>
