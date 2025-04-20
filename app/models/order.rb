@@ -4,8 +4,8 @@ class Order < ApplicationRecord
   has_many :products, through: :order_items
 
   validates :status, inclusion: { in: [ "processing", "processed", "shipped" ] }
-  validates :province, presence: true
-  validates :postal_code, presence: true
+  validates :order_date, :total_amount, :province, :postal_code, presence: true
+  validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
 
   def self.ransackable_attributes(auth_object = nil)
     [ "created_at", "customer_id", "id", "order_date", "total_amount", "updated_at" ]

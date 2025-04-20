@@ -5,7 +5,8 @@ class Customer < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :cart_items, through: :carts
 
-  validates :name, :email, :password, :address, :province, :postal_code, presence: true
+  validates :name, :email, :address, :province, :postal_code, presence: true
+  validates :email, uniqueness: true
 
   after_create :create_cart
 
