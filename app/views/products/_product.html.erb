@@ -35,7 +35,7 @@
 
       <p class="card-text"><strong>Price:</strong> <%= number_to_currency(product.price, unit: "$", precision: 2) %></p>
       <p class="card-text"><strong>Stock Quantity:</strong> <%= product.stock_quantity %></p>
-      <p class="card-text"><strong>Category:</strong> <%= link_to product.category.name, products_path(category: product.category.id), class: "text-decoration-none" %></p>
+      <p class="card-text"><strong>Category:</strong> <%= link_to product.category.name, products_path(category_id: product.category.id), class: "text-decoration-none" %></p>
 
       <div class="d-flex justify-content-between">
 

@@ -17,7 +17,7 @@
       <h2>Shop by Category</h2>
       <div class="mb-3">
         <% @categories.each do |category| %>
-          <%= link_to category.name, products_path(category: category.id), class: "btn btn-outline-dark text-decoration-none m-2" %>
+          <%= link_to category.name, products_path(category_id: category.id), class: "btn btn-outline-dark text-decoration-none m-2" %>
         <% end %>
       </div>
     </div>
