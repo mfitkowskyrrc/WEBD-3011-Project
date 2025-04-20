@@ -30,42 +30,42 @@
 
   </head>
 
-  <body>
-    <nav class="navbar navbar-light bg-light px-3">
-      <div class="container-fluid d-flex">
-        <span class="navbar-brand big-title me-auto">Game Haven</span>
+<body>
+  <nav class="navbar navbar-light bg-light px-3">
+    <div class="container-fluid d-flex">
+      <span class="navbar-brand big-title me-auto">Game Haven</span>
 
-        <div class="d-flex flex-column align-items-end">
-          <div class="d-flex">
-            <ul class="navbar-nav flex-row">
+      <div class="d-flex flex-column align-items-end">
+        <div class="d-flex">
+          <ul class="navbar-nav flex-row">
+            <li class="nav-item">
+              <%= button_to 'Home', root_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+            </li>
+            <li class="nav-item">
+              <%= button_to 'Products', products_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+            </li>
+            <% if current_customer&.admin? %>
               <li class="nav-item">
-                <a class="nav-link px-3" href="<%= root_path %>">Home</a>
+                <%= button_to 'Admin', admin_root_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+              </li>
+            <% end %>
+            <li class="nav-item">
+              <%= button_to 'View Cart', cart_path(session[:cart_id]), method: :get, class: 'nav-link px-3 btn btn-link' %>
+            </li>
+            <% if customer_signed_in? %>
+              <li class="nav-item">
+                <%= button_to 'Orders', orders_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
               </li>
               <li class="nav-item">
-                <a class="nav-link px-3" href="<%= products_path %>">Products</a>
+                <%= button_to 'Logout', destroy_customer_session_path, method: :delete, class: 'nav-link px-3 btn btn-link' %>
               </li>
-              <% if current_customer&.admin? %>
-                <li class="nav-item">
-                  <a class="nav-link px-3" href="<%= admin_root_path %>">Admin</a>
-                </li>
-              <% end %>
+            <% else %>
               <li class="nav-item">
-                <%= link_to 'View Cart', cart_path(session[:cart_id]), class: 'nav-link px-3' %>
+                <%= button_to 'Login', new_customer_session_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
               </li>
-              <% if customer_signed_in? %>
-                <li class="nav-item">
-                  <%= link_to 'Orders', orders_path, class: 'nav-link px-3' %>
-                </li>
-                <li class="nav-item">
-                  <%= link_to "Logout", destroy_customer_session_path, data: { turbo_method: :delete }, class: "nav-link px-3" %>
-                </li>
-              <% else %>
-                <li class="nav-item">
-                  <%= link_to 'Login', new_customer_session_path, class: 'nav-link px-3' %>
-                </li>
-              <% end %>
-            </ul>
-          </div>
+            <% end %>
+          </ul>
+        </div>
 
           <div class="mt-2">
             <%= form_with(url: products_path, method: :get, local: true, class: "d-flex align-items-center") do |form| %>
