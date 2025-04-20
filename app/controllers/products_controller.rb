@@ -12,8 +12,8 @@ class ProductsController < ApplicationController
       @products = @products.where("LOWER(name) LIKE ? OR LOWER(description) LIKE ?", search_term, search_term)
     end
 
-    if params[:category_id].present? && params[:category_id].to_i.positive?
-      @products = @products.where(category_id: params[:category_id])
+    if params[:category].present? && params[:category].to_i.positive?
+      @products = @products.where(category_id: params[:category])
     end
 
     case params[:sort]

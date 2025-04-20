@@ -7,7 +7,6 @@
 <div id="filter" class="d-flex justify-content-end mb-4">
   <div class="container">
     <div class="row">
-      <!-- Sort By Section -->
       <div class="col-md-6 d-flex mb-2 mb-md-0">
         <%= form_with(url: products_path, method: :get, local: true) do |form| %>
           <div class="d-flex">
@@ -18,7 +17,6 @@
         <% end %>
       </div>
 
-      <!-- Filter By Category Section -->
       <div class="col-md-6">
         <%= form_with(url: products_path, method: :get, local: true) do |form| %>
           <div class="d-flex">
@@ -42,7 +40,6 @@
   </div>
 </div>
 
-<!-- Pagination (ensure it stays centered and at the bottom) -->
 <div class="d-flex justify-content-center">
   <%= paginate @products, theme: 'bootstrap-5' %>
 </div>
