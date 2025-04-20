@@ -34,6 +34,16 @@ ActiveAdmin.register_page "Dashboard" do
       end
 
       column do
+        panel "Events" do
+          ul do
+            Event.order(created_at: :desc).map do |event|
+              li link_to(event.title, admin_event_path(event))
+            end
+          end
+        end
+      end
+
+      column do
         panel "Site Content" do
           ul do
             Content.order(created_at: :desc).limit(5).map do |content|

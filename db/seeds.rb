@@ -9,6 +9,7 @@ Product.destroy_all
 Order.destroy_all
 Cart.destroy_all
 Customer.destroy_all
+Event.destroy_all
 
 customers = [
   { name: "Ash", email: "ash@example.com", address: "Pallet Town", province: "Manitoba", postal_code: "12345", password: "password", admin: true },
@@ -28,6 +29,43 @@ customers.each do |customer_data|
   puts "Created #{customer_data[:name]}"
 end
 
+events = [
+  {
+    title: "Friday Night Magic",
+    description: "standard format",
+    start_time: Date.today.next_occurring(:friday) + 19.hours,
+    end_time: Date.today.next_occurring(:friday) + 22.hours
+  },
+  {
+    title: "Board Game Night",
+    description: "try some new stuff or play classics",
+    start_time: Date.today + 10.days + 18.hours,
+    end_time: Date.today + 10.days + 21.hours
+  },
+  {
+    title: "Yu-Gi-Oh Locals",
+    description: "duel time",
+    start_time: Date.today + 2.days + 14.hours,
+    end_time: Date.today + 2.days + 17.hours
+  },
+  {
+    title: "Pokemon League",
+    description: "casual play",
+    start_time: Date.today + 6.days + 12.hours,
+    end_time: Date.today + 6.days + 14.hours
+  },
+  {
+    title: "Learn to Play D&D",
+    description: "one-shot",
+    start_time: Date.today + 17.days + 13.hours,
+    end_time: Date.today + 17.days + 17.hours
+  }
+]
+
+events.each do |event|
+  Event.create!(event)
+  puts "Created #{event[:title]}"
+end
 
 
 def fetch_and_create_products_from_bgg(url, category_type)
@@ -37,7 +75,7 @@ def fetch_and_create_products_from_bgg(url, category_type)
   xml_data = Nokogiri::XML(response.body)
 
   item_ids = xml_data.xpath('//item').map { |item| item['id'] }
-  item_ids = item_ids.take(30)
+  item_ids = item_ids.take(15)
   item_ids.map(&:to_i)
 
   item_ids.each_slice(15) do |batch|
@@ -106,7 +144,7 @@ def fetch_and_create_products_from_tcgdex(set_id, category_type)
   set_response = HTTParty.get(set_url)
   set_data = set_response.parsed_response
 
-  card_ids = set_data['cards'].map { |card| card['id'] }.first(50)
+  card_ids = set_data['cards'].map { |card| card['id'] }.first(10)
 
   card_ids.each do |card_id|
     card_url = "https://api.tcgdex.net/v2/en/cards/#{card_id}"

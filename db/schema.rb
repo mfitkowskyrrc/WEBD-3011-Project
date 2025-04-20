@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_03_025340) do
+ActiveRecord::Schema[7.2].define(version: 2025_04_20_145349) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -114,11 +114,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_03_025340) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.string "name", null: false
-    t.date "date", null: false
+    t.string "title", null: false
+    t.datetime "start_time", precision: nil, null: false
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "end_time"
   end
 
   create_table "order_items", force: :cascade do |t|

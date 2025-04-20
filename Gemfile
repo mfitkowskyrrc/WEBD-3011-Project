@@ -59,6 +59,7 @@ end
 gem "httparty"
 gem "nokogiri"
 gem "faker"
+
 gem "kaminari"
 gem "bootstrap5-kaminari-views"
 
@@ -69,5 +70,9 @@ gem "cancancan"
 gem "draper"
 gem "pundit"
 gem "sassc-rails"
+
 gem "stripe"
 gem 'dotenv-rails'
+
+gem 'fullcalendar-rails'
+gem 'momentjs-rails'

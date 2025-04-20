@@ -11,3 +11,4 @@ pin "turbo", to: "https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.0.0/dist/turbo.
 
 pin "stripe", to: "https://js.stripe.com/v3/"
 pin "stripe_checkout", to: "stripe_checkout.js"
+pin "fullcalendar" # @6.1.17
