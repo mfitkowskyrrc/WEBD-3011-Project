@@ -1,69 +1,61 @@
-# syntax = docker/dockerfile:1
+# Base image with dependencies
+FROM ruby:3.2.7 AS base
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t my-app .
-# docker run -d -p 80:80 -p 443:443 --name my-app -e RAILS_MASTER_KEY=<value from config/master.key> my-app
+# Install system dependencies (add libvips42 for ActiveStorage variants)
+RUN apt-get update -qq && apt-get install -y \
+  build-essential \
+  libpq-dev \
+  nodejs \
+  yarn \
+  sqlite3 \
+  libyaml-dev \
+  libvips42
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.2.7
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
-
-# Rails app lives here
+# Set working directory
 WORKDIR /rails
 
-# Install base packages
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Set bundler environment variables
+ENV BUNDLE_PATH=/gems \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
-
-# Throw-away build stage to reduce size of final image
-FROM base AS build
-
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git pkg-config && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Install application gems
+# Copy only Gemfile(s) first to leverage Docker layer caching
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN gem install bundler && bundle install
 
-# Copy application code
+# Builder stage for asset precompilation
+FROM base AS builder
+
+# Fake ENV vars for build-time asset precompilation
+ENV STRIPE_SECRET_KEY=dummy_secret \
+    STRIPE_PUBLIC_KEY=dummy_public \
+    RAILS_ENV=production \
+    SECRET_KEY_BASE_DUMMY=1
+
+# Copy full app AFTER installing gems to preserve cache
 COPY . .
 
-# Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+# Precompile assets and bootsnap cache
+RUN bundle exec bootsnap precompile app/ lib/ && \
+    ./bin/rails assets:precompile && \
+    rm -rf tmp/cache
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+# Final runtime stage (slim and secure)
+FROM ruby:3.2.7
 
+# Install libvips for image processing (e.g., ActiveStorage)
+RUN apt-get update -qq && apt-get install -y libvips42
 
+COPY --from=builder /gems /gems
+COPY --from=builder /rails /rails
 
+WORKDIR /rails
 
-# Final stage for app image
-FROM base
+ENV RAILS_ENV=production \
+    BUNDLE_PATH=/gems
 
-# Copy built artifacts: gems, application
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build /rails /rails
+# Permissions and assets
+RUN mkdir -p /rails/public/assets && chmod -R 755 /rails/public
 
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
-
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-CMD ["./bin/rails", "server"]
+# Start the server
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

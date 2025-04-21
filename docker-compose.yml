@@ -1,0 +1,20 @@
+services:
+  web:
+    build:
+      context: .
+    image: game-haven-app
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: true
+      RAILS_MASTER_KEY: "${RAILS_MASTER_KEY}"
+      RAILS_SERVE_STATIC_FILES: "true"
+    env_file:
+      - .env
+    volumes:
+      - ./storage:/rails/storage
+      - ./db:/rails/db
+      - ./public:/rails/public
+    command: >
+      bash -c "bin/rails db:create db:migrate db:seed && bin/rails server -b '0.0.0.0'"
