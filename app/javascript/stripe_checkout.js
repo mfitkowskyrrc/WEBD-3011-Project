@@ -1,32 +1,47 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const stripe = Stripe("<%= ENV['STRIPE_PUBLIC_KEY'] %>");
+document.addEventListener("turbo:load", function() {
+  const stripeKey = document.querySelector('meta[name="stripe-public-key"]')?.content;
+  if (!stripeKey) {
+    console.error("Stripe public key not found in meta tag.");
+    return;
+  }
 
-  const checkoutButton = document.getElementById("checkout-button");
+  const stripe = Stripe(stripeKey);
 
-  checkoutButton.addEventListener("click", function (event) {
-    event.preventDefault();
+  const btn = document.getElementById("checkout-button");
+  if (!btn) {
+    return;
+  }
 
-    fetch("<%= create_checkout_session_cart_path %>", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cart_id: "<%= @cart.id %>",
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return stripe.redirectToCheckout({ sessionId: data.sessionId });
-      })
-      .then((result) => {
-        if (result.error) {
-          alert(result.error.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("An error occurred. Please try again.");
+  btn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    if (!csrfToken) {
+      alert("CSRF token not found");
+      return;
+    }
+
+    try {
+      const resp = await fetch("/cart/create_checkout_session", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({ cart_id: btn.dataset.cartId })
       });
+
+      const data = await resp.json();
+      if (resp.status !== 200) {
+        throw new Error(data.error || `Status ${resp.status}`);
+      }
+
+      await stripe.redirectToCheckout({ sessionId: data.sessionId });
+
+    } catch (err) {
+      console.error("Checkout error:", err);
+      alert(`Payment setup failed: ${err.message}`);
+    }
   });
 });

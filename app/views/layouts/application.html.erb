@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <meta name="stripe-public-key" content="<%= ENV['STRIPE_PUBLIC_KEY'] %>">
 
     <%= yield :head %>
 
@@ -20,63 +21,49 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <style>
       .big-title {
-        font-size: 4rem; /* Super large title */
+        font-size: 4rem;
         font-weight: bold;
-        white-space: nowrap; /* Prevent wrapping */
+        white-space: nowrap;
       }
     </style>
-
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css" rel="stylesheet" />
-
+    <script src="https://js.stripe.com/v3/"></script>
   </head>
 
-<body>
-  <nav class="navbar navbar-light bg-light px-3">
-    <div class="container-fluid d-flex">
-      <span class="navbar-brand big-title me-auto">Game Haven</span>
-
-      <div class="d-flex flex-column align-items-end">
-        <div class="d-flex">
-          <ul class="navbar-nav flex-row">
-            <li class="nav-item">
-              <%= button_to 'Home', root_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
-            </li>
-            <li class="nav-item">
-              <%= button_to 'Products', products_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
-            </li>
-            <% if current_customer&.admin? %>
+  <body>
+    <nav class="navbar navbar-light bg-light px-3">
+      <div class="container-fluid d-flex">
+        <span class="navbar-brand big-title me-auto">Game Haven</span>
+        <div class="d-flex flex-column align-items-end">
+          <div class="d-flex">
+            <ul class="navbar-nav flex-row">
               <li class="nav-item">
-                <%= button_to 'Admin', admin_root_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
-              </li>
-            <% end %>
-            <li class="nav-item">
-              <%= button_to 'View Cart', cart_path(session[:cart_id]), method: :get, class: 'nav-link px-3 btn btn-link' %>
-            </li>
-            <% if customer_signed_in? %>
-              <li class="nav-item">
-                <%= button_to 'Orders', orders_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+                <%= button_to 'Home', root_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
               </li>
               <li class="nav-item">
-                <%= button_to 'Logout', destroy_customer_session_path, method: :delete, class: 'nav-link px-3 btn btn-link' %>
+                <%= button_to 'Products', products_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
               </li>
-            <% else %>
+              <% if current_customer&.admin? %>
+                <li class="nav-item">
+                  <%= button_to 'Admin', admin_root_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+                </li>
+              <% end %>
               <li class="nav-item">
-                <%= button_to 'Login', new_customer_session_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+                <%= button_to 'View Cart', cart_path(session[:cart_id]), method: :get, class: 'nav-link px-3 btn btn-link' %>
               </li>
-            <% end %>
-          </ul>
-        </div>
-
-          <div class="mt-2">
-            <%= form_with(url: products_path, method: :get, local: true, class: "d-flex align-items-center") do |form| %>
-              <div class="me-2">
-                <%= form.text_field :search, placeholder: "Search...", class: "form-control form-control-sm", style: "width: 200px; height: 25px;" %>
-              </div>
-              <div class="me-2">
-                <%= form.select :category_id, options_for_select([["All Categories", ""]] + Category.pluck(:name, :id)), class: "form-select form-select-sm", style: "width: 140px; height: 30px;" %>
-              </div>
-              <%= form.submit "Search", class: "btn btn-outline-secondary btn-sm", style: "height: 30px;" %>
-            <% end %>
+              <% if customer_signed_in? %>
+                <li class="nav-item">
+                  <%= button_to 'Orders', orders_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+                </li>
+                <li class="nav-item">
+                  <%= button_to 'Logout', destroy_customer_session_path, method: :delete, class: 'nav-link px-3 btn btn-link' %>
+                </li>
+              <% else %>
+                <li class="nav-item">
+                  <%= button_to 'Login', new_customer_session_path, method: :get, class: 'nav-link px-3 btn btn-link' %>
+                </li>
+              <% end %>
+            </ul>
           </div>
         </div>
       </div>

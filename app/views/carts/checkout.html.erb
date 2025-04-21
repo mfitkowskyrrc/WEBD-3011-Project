@@ -47,10 +47,10 @@
           </div>
         <% end %>
 
-        <!-- Button to trigger redirect to Stripe Checkout -->
-        <button id="checkout-button" type="button" class="btn btn-success btn-lg w-100">
+        <button id="checkout-button" data-cart-id="<%= @cart.id %>" type="button" class="btn btn-success btn-lg w-100">
           Complete Purchase
         </button>
+
       <% end %>
     </div>
   </div>
@@ -63,12 +63,18 @@
   <%= link_to 'Back to Cart', cart_path, class: 'btn btn-outline-secondary btn-sm' %>
 </div>
 
-<%= javascript_include_tag "https://js.stripe.com/v3/" %>
 <script>
   document.addEventListener("turbo:load", function() {
-    const stripe = Stripe("<%= ENV['STRIPE_PUBLIC_KEY'] %>"); // ✅ Define Stripe here
+    const stripeKey = document.querySelector('meta[name="stripe-public-key"]')?.content;
+    if (!stripeKey) {
+      console.error("Stripe public key not found in meta tag.");
+      return;
+    }
 
+    const stripe = Stripe(stripeKey);
     const btn = document.getElementById("checkout-button");
+    if (!btn) return;
+
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
 
@@ -99,4 +105,3 @@
     });
   });
 </script>
-
